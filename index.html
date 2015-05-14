@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html>
+        <title>Crypto:PaulBliudzius</title>        
+        <meta http-equiv="Content-Language" content="en-us" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <!-- <link rel="shortcut icon" href="favicon.ico" /> -->
+    </head>
+    <body>
+        <h1>Paul Bliudzius : Cryptography Helper</h1>
+        A:<input id="gcdA" value=""></input>B:<input id="gcdB" value=""></input>C(for a*x+b*y=c):<input id="gcdC" value="1"></input><button id="gcdCalc" onclick="calculateGCD()">GCD</button><button id="exgcdeCalc" onclick="calculateGCDextended()">GCD Extended</button>
+        <p id="gcdP"></p>
+        A:<input id="modA" value=""></input>B:<input id="modB" value="26"></input><button id="modCalc" onclick="calculateMOD()">A(mod B)</button><button id="invCalc" onclick="inverseMOD()">inverse of A for A(mod B)</button><p id="modP"></p>
+
+        <button id="30" onclick="mod30()">Mod 30</button>
+        <p id="mod"></p>
+        GetNumber<input id="letter"></input>
+        <button id="letterButt" onclick="giveNumber()">Click me</button>
+        <p id="twoHalf"></p>
+
+        GetLetter(Common Split)<input id="number"></input>
+        <button id="numbButt" onclick="getLetter()">Click me</button>
+        <p id="numberP"></p>
+        <h1>Affine</h1>
+        Affine Text<input id="affine" value=""></input>Ax+B || A:<input id="affineA" value="1"></input>B:<input id="affineB" value="0"></input>
+
+        <button id="affineE" onclick="affineE()">Encrypt</button><button id="affineD" onclick="affineD()">Decrypt</button><button id="affineBrute" onclick="affineBrute()">Brute Decrypt</button><button id="affineClear" onclick="clearAffine()">Clear</button>
+        <p id="affineP"></p>
+        <h1>Vigene</h1>
+        Put Text Here you want to analyze for Vigene<textarea id="input"></textarea>
+        <button onclick="getData()">Click me</button>
+        <p id="first"></p>
+
+        Length:<input id="length"></input>
+        Current Position(Start at 0)<input id="currentSpot"></input>
+        <button id="freqClick" onclick="generateFrequency()">Get Frequency</button>
+        <p id="second"></p>
+        Word<input id="word"></input>
+        <button id="wordButt" onclick="decipher()">Decipher</button>
+        <p id="third"></p>
+        <h1> DES Encryption </h1>
+        Please refer to function DES() to understand this function better<br>
+        DES Message<input id="DESinput" value="0101010101010101010101010101010101010101010101010101010101010101"></input>
+        Key<input id="DESkey" value="0111111101001001110000101000001100011100000011101111010011101001"></input>Iterations<input id="DESiter" value="1"></input>Rounds<input id="DESrounds" value="16"></input>
+        <button id="DESbutt" onclick="DES()">DES</button>
+        <p id="DESp"><br></p>
+        <h1> Secure Hash Algorithm (SHA) </h1>
+        Please refer to function SHA() to understand this function better, you can also press F12 to view the iterations.<br>
+        SHA Message<input id="SHAinput" value=""></input>
+        <button id="SHAbutt" onclick="SHA()">SHA</button>
+        <p id="SHAp"><br></p>
+    </body>
+    <script>
+        var ABC = "abcdefghijklmnopqrstuvwxyz";
+
+        $("#number").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#numbButt").click();
+            }
+        });
+
+        $("#length").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#freqClick").click();
+            }
+        });
+
+        $("#word").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#wordButt").click();
+            }
+        });
+        $("#letter").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#letterButt").click();
+            }
+        });
+        $("#affine").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#affineE").click();
+            }
+        });
+        $("#affineA").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#affineE").click();
+            }
+        });
+        $("#affineB").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#affineE").click();
+            }
+        });
+        $("#gcdA").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#gcdCalc").click();
+            }
+        });
+        $("#gcdB").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#gcdCalc").click();
+            }
+        });
+        $("#modA").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#modCalc").click();
+            }
+        });
+        $("#modB").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#modCalc").click();
+            }
+        });
+        $("#DESinput").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#DESbutt").click();
+            }
+        });
+        $("#SHAinput").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#SHAbutt").click();
+            }
+        });
+
+        function getLetter(){
+            var B = document.getElementById("number").value.split(",");
+            for(var i = 0;i<B.length;i++){
+                B[i]=ABC.charAt(parseInt(B[i])%ABC.length);
+            }
+            var P = document.getElementById("numberP");
+            P.innerHTML = B.join(",");
+        }
+
+        function gcd(a, b) {
+            if (!b) {
+                return a;
+            }
+
+            return gcd(b, a % b);
+        };
+
+        function calculateGCD(){
+            var A = parseInt(document.getElementById("gcdA").value);
+            var B = parseInt(document.getElementById("gcdB").value);
+            var P = document.getElementById("gcdP");
+            if(!A||!B){
+                return;
+            }
+            if(A>B){
+                P.innerHTML= gcd(A,B);
+            }else{
+                P.innerHTML= gcd(B,A);
+            }
+        }
+        function calculateGCDextended(){
+            var A = parseInt(document.getElementById("gcdA").value);
+            var B = parseInt(document.getElementById("gcdB").value);
+            var C = parseInt(document.getElementById("gcdC").value);
+            var P = document.getElementById("gcdP");
+            P.innerHTML="";
+            if(!A||!B){
+                return;
+            }
+            var temp;
+            if(A>B){
+                // P.innerHTML=P.innerHTML+"<br>"+ 
+                temp=exNOTONEgcd(A,B,C);
+            }else{
+                // P.innerHTML=P.innerHTML+"<br>"+ 
+                temp=exNOTONEgcd(B,A,C);
+            }
+            P.innerHTML=P.innerHTML+"<br>"+ temp;
+        }
+        function inverseMOD(){
+            var A = document.getElementById("modA").value.split(",");
+            var B = parseInt(document.getElementById("modB").value);
+            for(var i = 0;i<A.length;i++){
+                if(gcd(parseInt(A[i]),B)==1){
+                    for(var check =1;check<B;check++){
+                        if((parseInt(A[i])*check)%B==1){
+                            A[i] = check;
+                            break;
+                        }
+                    }
+                }else{
+                    A[i]=-1;
+                }
+            }
+            var P = document.getElementById("modP");
+            P.innerHTML = A.join(",");
+        }
+        function exNOTONEgcd(a,b,d){ 
+            var P = document.getElementById("gcdP");
+            if(!b){
+                P.innerHTML=P.innerHTML+"<br> a:"+a+" b:"+b;
+                return [d, 0, a];
+            }else{
+                P.innerHTML=P.innerHTML+"<br> a:"+a+" b:"+b;
+                temp = exNOTONEgcd(b, a % b,d)
+                x = temp[0];
+                y = temp[1];
+                c = temp[2];
+                P.innerHTML=P.innerHTML+"<br> x:"+x+" y:"+y+" c:"+c;
+                return [y, x-y*Math.floor(a/b), c]
+            }
+        }
+        function calculateMOD(){
+            var A = document.getElementById("modA").value.split(",");
+            var B = parseInt(document.getElementById("modB").value);
+            for(var i = 0;i<A.length;i++){
+                A[i]=(parseInt(A[i])%B);
+            }
+            var P = document.getElementById("modP");
+            P.innerHTML = A.join(",");
+        }
+
+        function clearAffine(){
+            var third = document.getElementById("affineP");
+             third.innerHTML="";
+        }
+        function mod30(){
+            var third = document.getElementById("mod");
+            var mod30 = 30;
+            var arrayMod =[0];
+            var multiplier = 10;
+            for(var i=0;i<mod30;i++){
+                arrayMod.push(0);
+                var k = i*multiplier;
+                while(k>=30){
+                    k=k-30;
+                }
+                console.log(k);
+                arrayMod[i]=k;
+            }
+            third.innerHTML=arrayMod.join("|");
+        }
+        function affineBrute(){
+            var relPrime = [1,9,21,15,3,19];//,23,11,17];// //Relatively for [1,3,5,7,9,11,17,19,23];
+            var inverseNum = [1,3,5,7,9,11,17,19,23];
+            var input = document.getElementById("affine")
+            var text = input.value.replace(/ /g,'');
+            text= text.toLowerCase();
+            var length = text.length;
+            var third = document.getElementById("affineP");
+            var arrText = text.split("");
+            third.innerHTML="";
+             
+            for(var A=0;A<relPrime.length;A++){
+                for(var B=0;B< ABC.length;B++){
+                    arrText = text.split("");
+                    for(var k=0;k<length;k++){
+                        //Decrypt
+                        var newPos = ABC.indexOf(arrText[k])+ ABC.length;
+                        newPos=((newPos-B)*relPrime[A])% ABC.length
+                        arrText[k]=ABC.charAt(newPos);
+                    }
+                    third.innerHTML=third.innerHTML+"<br> "+"A:"+inverseNum[A]+"B:"+B+"  "+arrText.join("");
+                }
+            }
+        }
+        function affineE(){
+            var input = document.getElementById("affine")
+            var text = input.value.replace(/ /g,'');
+            text= text.toLowerCase();
+            var length = text.length
+            var third = document.getElementById("affineP");
+            var arrText = text.split("");
+            var A = parseInt(document.getElementById("affineA").value);
+            var B = parseInt(document.getElementById("affineB").value);
+            
+             
+            for(var currentSpot = 0;currentSpot<length;currentSpot++){
+                var currentLetterNumber = ABC.indexOf(word[currentSpot]);
+                for(var k=currentSpot;k<arrText.length;k=parseInt(k)+parseInt(length)){
+                    var newPos =  ABC.indexOf(arrText[k])*A+B;
+                    console.log(newPos);
+
+                    while(newPos>25){
+                        newPos=newPos- ABC.length;
+                    }
+                    arrText[k]=ABC.charAt(newPos);
+                }
+            }
+            third.innerHTML=arrText.join("");
+        }
+        function affineD(){
+            var input = document.getElementById("affine")
+            var text = input.value.replace(/ /g,'');
+            text= text.toLowerCase();
+            var length = text.length
+            var third = document.getElementById("affineP");
+            var arrText = text.split("");
+            var A = parseInt(document.getElementById("affineA").value);
+            var B = parseInt(document.getElementById("affineB").value);
+            
+             
+            for(var currentSpot = 0;currentSpot<length;currentSpot++){
+                var currentLetterNumber = ABC.indexOf(word[currentSpot]);
+                for(var k=currentSpot;k<arrText.length;k=parseInt(k)+parseInt(length)){
+                    var newPos =  ABC.indexOf(arrText[k])-B;
+                    if(newPos<0){
+                        newPos+= ABC.length;
+                    }
+                    var multiplier =0;
+                    console.log((newPos+multiplier* ABC.length)/A);
+                    while(!isInt((newPos+multiplier* ABC.length)/A)){
+                        console.log((newPos+multiplier* ABC.length)/A);
+                        multiplier++;
+                    }
+                    newPos=(newPos+multiplier* ABC.length)/A;
+                    arrText[k]=ABC.charAt(newPos);
+                }
+            }
+            third.innerHTML=arrText.join("");
+        }
+        function isInt(n) {
+           return n % 1 === 0;
+        }
+        function giveNumber(){
+           var letter = document.getElementById("letter").value.toLowerCase();
+           var length = letter.length;
+           var output = document.getElementById("twoHalf")
+            
+           output.innerHTML="";
+           for(var currentSpot = 0;currentSpot<length;currentSpot++){
+               var currentLetterNumber = ABC.indexOf(letter[currentSpot]);
+               output.innerHTML=output.innerHTML+ " "+currentLetterNumber;
+           }
+        }
+        function getData(){
+            var first = document.getElementById("first");
+            var input = document.getElementById("input")
+            var text = input.value.replace(/ /g,'');
+            text= text.toLowerCase();
+            // console.log(text)
+            var hash = {};
+            for (var i = 2; i <= text.length/2; i++) {
+                for (var k = 0;k+i<=text.length;k++){
+                    var subString = text.substring(k,k+i);
+                    if(subString in hash){
+                        hash[subString].freq++;
+                        hash[subString].position.push(k);
+                    }else{
+                        hash[subString]={};
+                        hash[subString].freq=1;
+                        hash[subString].position=[k];
+                    }
+                }
+                text[i]
+            };
+            var newText = "";
+            for (var key in hash){
+                if(hash[key].freq>1){
+                    var gapString = "";
+                    for(var pI = 0;pI<hash[key].position.length-1;pI++){
+                        var item = hash[key].position[pI+1]-hash[key].position[pI];
+                        gapString=gapString+"/"+item;
+                    }
+                    newText= newText+"<b>"+key+"</b>"+": :"+hash[key].freq+": : Gaps="+gapString + "<br>"
+                }
+            }
+            // console.log(hash)
+            first.innerHTML ="Length="+text.length+"<br>"+ newText
+        }
+        function generateFrequency(){
+            var length = parseInt(document.getElementById("length").value)
+            var currentSpot = parseInt(document.getElementById("currentSpot").value)
+            var second = document.getElementById("second");
+            var input = document.getElementById("input")
+            var text = input.value.replace(/ /g,'');
+            // var ABCfreq=["8.16","1.49","2.78","4.25","12.70",".22","2.01","6.09","6.96","0.15","0.77","4.02","2.40","6.74","7.50","1.92","0.09","5.98","6.32","9.05","2.75","0.97","2.36","0.15","1.97","0.07"];
+            var abcNumFreq = [8.16,1.49,2.78,4.25,12.70,.22,2.01,6.09,6.96,0.15,0.77,4.02,2.40,6.74,7.50,1.92,0.09,5.98,6.32,9.05,2.75,0.97,2.36,0.15,1.97,0.07];
+            text= text.toLowerCase();
+            var alphaArray = [];
+            var dotProduct = 0;
+            var bestShift =0;
+            for(var i=0;i< ABC.length;i++){
+                alphaArray[i]=0;
+            }
+             
+            for(var k=currentSpot;k<text.length;k+=length){
+                alphaArray[ABC.indexOf(text[k])]++;
+            }
+            for(var i=0;i< ABC.length;i++){
+                // alphaArray[i]=alphaArray[i]/ ABC.length;
+                alphaArray[i]=alphaArray[i].toFixed(2);
+            }
+            var newDot=0;
+            for(var shift=0;shift<ABC.length;shift++){
+                newDot = 0;
+                for(var i=0;i< ABC.length;i++){
+                    if(shift+i>=ABC.length){
+                        newDot += alphaArray[shift+i-26]*abcNumFreq[i];
+                    }else{
+                        newDot += alphaArray[shift+i]*abcNumFreq[i];
+                    }
+                }
+                console.log(newDot);
+                if(newDot>dotProduct){
+                    dotProduct=newDot;
+                    bestShift=shift;
+                }
+            }
+            second.innerHTML = "8.16|||1.49|||2.78|||4.25|||12.70|||.22|||2.01|||6.09|||6.96|||0.15|||0.77|||4.02|||2.40|||6.74|||7.50|||1.92|||0.09|||5.98|||6.32|||9.05|||2.75|||0.97|||2.36|||0.15|||1.97|||0.07<br>"
+            second.innerHTML = second.innerHTML+ alphaArray.join("|||");
+            second.innerHTML = second.innerHTML+ "<br> Best shift="+bestShift;
+        }
+        function decipher(){
+            var input = document.getElementById("input")
+            var text = input.value.replace(/ /g,'');
+            text= text.toLowerCase();
+            var word = document.getElementById("word").value
+            word = word.toLowerCase();
+            var length = word.length
+            var third = document.getElementById("third");
+            var arrText = text.split("");
+            
+            //Test1 quesiton #5 for changing key
+            // var key = ABC.indexOf(word[0]);
+            // for(var k=0;k<arrText.length;k++){
+            //     console.log(key);
+            //         // console.log(k)
+            //     var newPos =  ABC.indexOf(arrText[k])-key;
+            //     if(newPos<0){
+            //         newPos=newPos+ ABC.length;
+            //     }
+            //     arrText[k]=ABC.charAt(newPos);
+            //     key = newPos;
+            // }
+            for(var currentSpot = 0;currentSpot<length;currentSpot++){
+                var currentLetterNumber = ABC.indexOf(word[currentSpot]);
+                for(var k=currentSpot;k<arrText.length;k=parseInt(k)+parseInt(length)){
+                    // console.log(k)
+                    var newPos =  ABC.indexOf(arrText[k])-currentLetterNumber;
+                    if(newPos<0){
+                        newPos=newPos+ ABC.length;
+                    }
+                    arrText[k]=ABC.charAt(newPos);
+                }
+            }
+            third.innerHTML=arrText.join("");
+        }
+        /*
+  _____  ______  _____   ______                             _   _             
+ |  __ \|  ____|/ ____| |  ____|                           | | (_)            
+ | |  | | |__  | (___   | |__   _ __   ___ _ __ _   _ _ __ | |_ _  ___  _ __  
+ | |  | |  __|  \___ \  |  __| | '_ \ / __| '__| | | | '_ \| __| |/ _ \| '_ \ 
+ | |__| | |____ ____) | | |____| | | | (__| |  | |_| | |_) | |_| | (_) | | | |
+ |_____/|______|_____/  |______|_| |_|\___|_|   \__, | .__/ \__|_|\___/|_| |_|
+                                                 __/ | |                      
+                                                |___/|_|                      
+function DES() is the starting function. Please note that DESencNO and DEShelperNO with the NO at the end are for not printing any debugger. these are the
+functions used and they have been commented
+If you would like to view the prints per round, you can see it occur with i iteration and opening up the console (F12)
+        */
+        function DES(){       
+            var input = document.getElementById("DESinput").value;
+            var rounds = parseInt(document.getElementById("DESrounds").value);
+            var iterations = parseInt(document.getElementById("DESiter").value);
+            var P = document.getElementById("DESp");
+            if(input.length!=64){
+                alert("NOT 64 Bits");
+                return;
+            }
+            var charArray = input.split("");
+            var holder=[];
+            var oldBlock=[];
+            //converting all values to ints
+            for(var i=0;i<charArray.length;i++){
+                holder[i] = parseInt(charArray[i]);
+                oldBlock[i]=0;
+            }
+            var otherHolder = holder;
+
+            if(iterations==1){
+                //if only 1 iteration, print debugging
+                otherHolder = DESenc(holder,rounds);
+            }else{
+                //If you want to see how long an iteration takes, check the console (F12), it will print it for you in 'ms'.
+                console.time('iteration');
+                //for iterations over 1
+                for(var i=0;i<iterations;i++){
+                    for(var k=0;k<otherHolder.length;k++){
+                        otherHolder[k]=checkSum(holder[k],oldBlock[k]);
+                    }
+                    otherHolder = DESencNO(otherHolder,rounds);
+                    oldBlock=otherHolder;
+                }
+                var time = console.timeEnd('iteration');
+            }
+            P.innerHTML = otherHolder;
+            console.log("cipherEnd  "+otherHolder);
+        }
+        function DESencNO(message,rounds){
+            var IP = [58,50,42,34,26,18,10,2,60,52,44,36,28,20,12,4,62,54,46,38,30,22,14,6,64,56,48,40,32,24,16,8,57,49,41,33,25,17,9,1,59,51,43,35,27,19,11,3,61,53,45,37,29,21,13,5,63,55,47,39,31,23,15,7];
+            var newArray=[];
+            for(var i=0;i<IP.length;i++){
+                newArray[i] = message[IP[i]-1];
+            }
+            //Split message into left and right 
+            var halfLength = Math.ceil(newArray.length / 2); 
+            var left = newArray.splice(0,halfLength);
+            var right = newArray;
+            //call the DES function to really called (DEShelperNO is the major DES function)
+            var tempArray = DEShelperNO(left,right,0,rounds);
+            //Once done running, the final Round shouldn't be flipped, so we de-flip it.
+            halfLength = Math.ceil(tempArray.length / 2); 
+            left = tempArray.splice(0,halfLength);
+            var newTemp=tempArray.concat(left);
+            var endText=[];
+            //IP Inversing
+            for(var i=0;i<IP.length;i++){
+                endText[IP[i]-1] = newTemp[i];
+            }
+            return endText;
+        }
+        function DEShelperNO(left,right,round,roundsTOGO){
+            //When to stop
+            if(roundsTOGO<1){
+                return left.concat(right);
+            }
+            var keyTemp = document.getElementById("DESkey").value.split("");
+            var keyArray = [];
+            //Key from string to int
+            for(var keycounter=0;keycounter<keyTemp.length;keycounter++){
+                keyArray[keycounter]=parseInt(keyTemp[keycounter]);
+            }
+            //All the tables to use
+            var ER = [32,1,2,3,4,5,4,5,6,7,8,9,8,9,10,11,12,13,12,13,14,15,16,17,16,17,18,19,20,21,20,21,22,23,24,25,24,25,26,27,28,29,28,29,30,31,32,1];
+            var PermC = [16,7,20,21,29,12,28,17,1,15,23,26,5,18,31,10,2,8,24,14,32,27,3,9,19,13,30,6,22,11,4,25];
+            var KeyPerm = [57,49,41,33,25,17,9,1,58,50,42,34,26,18,10,2,59,51,43,35,27,19,11,3,60,52,44,36,63,55,47,39,31,23,15,7,62,54,46,38,30,22,14,6,61,53,45,37,29,21,13,5,28,20,12,4];
+            var Lsi = [1,1,2,2,2,2,2,2,1,2,2,2,2,2,2,1];
+            var KeyPrem2 = [14,17,11,24,1,5,3,28,15,6,21,10,23,19,12,4,26,8,16,7,27,20,13,2,41,52,31,37,47,55,30,40,51,45,33,48,44,49,39,56,34,53,46,42,50,36,29,32];
+            var Sbox1 = [14,4,13,1,2,15,11,8,3,10,6,12,5,9,0,7,0,15,7,4,14,2,13,1,10,6,12,11,9,5,3,8,4,1,14,8,13,6,2,11,15,12,9,7,3,10,5,0,15,12,8,2,4,9,1,7,5,11,3,14,10,0,6,13];
+            var Sbox2 = [15,1,8,14,6,11,3,4,9,7,2,13,12,0,5,10,3,13,4,7,15,2,8,14,12,0,1,10,6,9,11,5,0,14,7,11,10,4,13,1,5,8,12,6,9,3,2,15,13,8,10,1,3,15,4,2,11,6,7,12,0,5,14,9];
+            var Sbox3 = [10,0,9,14,6,3,15,5,1,13,12,7,11,4,2,8,13,7,0,9,3,4,6,10,2,8,5,14,12,11,15,1,13,6,4,9,8,15,3,0,11,1,2,12,5,10,14,7,1,10,13,0,6,9,8,7,4,15,14,3,11,5,2,12];
+            var Sbox4 = [7,13,14,3,0,6,9,10,1,2,8,5,11,12,4,15,13,8,11,5,6,15,0,3,4,7,2,12,1,10,14,9,10,6,9,0,12,11,7,13,15,1,3,14,5,2,8,4,3,15,0,6,10,1,13,8,9,4,5,11,12,7,2,14];
+            var Sbox5 = [2,12,4,1,7,10,11,6,8,5,3,15,13,0,14,9,14,11,2,12,4,7,13,1,5,0,15,10,3,9,8,6,4,2,1,11,10,13,7,8,15,9,12,5,6,3,0,14,11,8,12,7,1,14,2,13,6,15,0,9,10,4,5,3];
+            var Sbox6 = [12,1,10,15,9,2,6,8,0,13,3,4,14,7,5,11,10,15,4,2,7,12,9,5,6,1,13,14,0,11,3,8,9,14,15,5,2,8,12,3,7,0,4,10,1,13,11,6,4,3,2,12,9,5,15,10,11,14,1,7,6,0,8,13];
+            var Sbox7 = [4,11,2,14,15,0,8,13,3,12,9,7,5,10,6,1,13,0,11,7,4,9,1,10,14,3,5,12,2,15,8,6,1,4,11,13,12,3,7,14,10,15,6,8,0,5,9,2,6,11,13,8,1,4,10,7,9,5,0,15,14,2,3,12];
+            var Sbox8 = [13,2,8,4,6,15,11,1,10,9,3,14,5,0,12,7,1,15,13,8,10,3,7,4,12,5,6,11,0,14,9,2,7,11,4,1,9,12,14,2,0,6,10,13,15,3,5,8,2,1,14,7,4,10,8,13,15,12,9,0,3,5,6,11];
+            var expanded = [];
+            //Expand
+            for(var ec=0;ec<ER.length;ec++){
+                expanded[ec]=right[ER[ec]-1];
+            }
+            //Prepare split
+            var halfLength = Math.ceil(KeyPerm.length / 2); 
+            var keyLeft=[];
+            var keyRight=[];
+            //KeyPerm both left and right while splitting
+            for(var i=0;i<halfLength;i++){
+                keyLeft[i]=keyArray[KeyPerm[i]-1]
+                keyRight[i]=keyArray[KeyPerm[halfLength+i]-1];
+            }
+            //Calculate shift amount
+            var shiftAmount = 0;
+            for(var k = 0;k<round+1;k++){
+                shiftAmount += Lsi[k];
+            }
+            //Shift left and shift right sides
+            for(var j = 0;j<shiftAmount;j++){
+                var tempLeft = keyLeft[0];
+                var tempRight = keyRight[0];
+                for(var m = 0;m<keyLeft.length-1;m++){
+                    keyLeft[m]=keyLeft[m+1];
+                    keyRight[m]=keyRight[m+1];
+                }
+                keyLeft[keyLeft.length-1]=tempLeft;
+                keyRight[keyRight.length-1]=tempRight;
+            }
+            //Join left and right keys
+            var conjoined = keyLeft.concat(keyRight);
+
+            var conNew = [];
+            //KeyPerm2 the combined key
+            for(var pe=0;pe<KeyPrem2.length;pe++){
+                conNew[pe] = conjoined[KeyPrem2[pe]-1];
+            }
+            //Checksum it with the expanded R and the end of the key
+            var checked = [];
+            for(var i=0;i<expanded.length;i++){
+                checked[i]=checkSum(expanded[i],conNew[i]);
+            }
+            //Split the code into 6's for each section for the Sbox's
+            var ss1t = checked.splice(0,6);
+            var ss2t = checked.splice(0,6);
+            var ss3t = checked.splice(0,6);
+            var ss4t = checked.splice(0,6);
+            var ss5t = checked.splice(0,6);
+            var ss6t = checked.splice(0,6);
+            var ss7t = checked.splice(0,6);
+            var ss8t = checked;
+            //Reordering becaus ethe 1,6,2,3,4,5 works in the way that having 1,6 row is really just the first 2 bits
+            //So just have the SBOX as 1 array list and the 1,6,2,3,4,5 gives thenumber
+            var ss1 = [ss1t[0],ss1t[5],ss1t[1],ss1t[2],ss1t[3],ss1t[4]];
+            var ss2 = [ss2t[0],ss2t[5],ss2t[1],ss2t[2],ss2t[3],ss2t[4]];
+            var ss3 = [ss3t[0],ss3t[5],ss3t[1],ss3t[2],ss3t[3],ss3t[4]];
+            var ss4 = [ss4t[0],ss4t[5],ss4t[1],ss4t[2],ss4t[3],ss4t[4]];
+            var ss5 = [ss5t[0],ss5t[5],ss5t[1],ss5t[2],ss5t[3],ss5t[4]];
+            var ss6 = [ss6t[0],ss6t[5],ss6t[1],ss6t[2],ss6t[3],ss6t[4]];
+            var ss7 = [ss7t[0],ss7t[5],ss7t[1],ss7t[2],ss7t[3],ss7t[4]];
+            var ss8 = [ss8t[0],ss8t[5],ss8t[1],ss8t[2],ss8t[3],ss8t[4]];
+            //Converting the gotten ssX to int (from binary) to look inside the sbox, then to binary again to have the string
+            var sbOut1 = intToBinaryArr(Sbox1[binaryCount(ss1)],4);
+            var sbOut2 = intToBinaryArr(Sbox2[binaryCount(ss2)],4);
+            var sbOut3 = intToBinaryArr(Sbox3[binaryCount(ss3)],4);
+            var sbOut4 = intToBinaryArr(Sbox4[binaryCount(ss4)],4);
+            var sbOut5 = intToBinaryArr(Sbox5[binaryCount(ss5)],4);
+            var sbOut6 = intToBinaryArr(Sbox6[binaryCount(ss6)],4);
+            var sbOut7 = intToBinaryArr(Sbox7[binaryCount(ss7)],4);
+            var sbOut8 = intToBinaryArr(Sbox8[binaryCount(ss8)],4);
+            //combine all the values back to 1 array
+            var sConcat=sbOut1.concat(sbOut2.concat(sbOut3.concat(sbOut4.concat(sbOut5.concat(sbOut6.concat(sbOut7.concat(sbOut8)))))));
+            //Use the perm for the sbox combined values
+            var permNew = [];
+            for(var i=0;i<PermC.length;i++){
+                permNew[i] = sConcat[PermC[i]-1];
+            }
+            //The final checksum
+            var finalCheck = [];
+            for(var i=0;i<left.length;i++){
+                finalCheck[i]=checkSum(left[i],permNew[i]);
+            }
+            //recurse
+            return DEShelperNO(right,finalCheck,round+1,roundsTOGO-1);
+        }
+
+        function DESenc(message,rounds){
+            var IP = [58,50,42,34,26,18,10,2,60,52,44,36,28,20,12,4,62,54,46,38,30,22,14,6,64,56,48,40,32,24,16,8,57,49,41,33,25,17,9,1,59,51,43,35,27,19,11,3,61,53,45,37,29,21,13,5,63,55,47,39,31,23,15,7];
+            var newArray=[];
+            for(var i=0;i<IP.length;i++){
+                newArray[i] = message[IP[i]-1];
+            }
+            var halfLength = Math.ceil(newArray.length / 2); 
+            var left = newArray.splice(0,halfLength);
+            var right = newArray;
+            console.log("IP  "+left+","+right);
+            console.log("left     "+left);
+            console.log("right    "+right);
+            var tempArray = DEShelper(left,right,0,rounds);
+            halfLength = Math.ceil(tempArray.length / 2); 
+            left = tempArray.splice(0,halfLength);
+            var newTemp=tempArray.concat(left);
+            var endText=[];
+            console.log("almost  "+newTemp);
+            for(var i=0;i<IP.length;i++){
+                endText[IP[i]-1] = newTemp[i];
+            }
+            console.log("cipher "+endText);
+            return endText;
+        }
+        function DEShelper(left,right,round,roundsTOGO){
+            if(roundsTOGO<1){
+                return left.concat(right);
+            }
+            var keyTemp = document.getElementById("DESkey").value.split("");
+            var keyArray = [];
+            for(var keycounter=0;keycounter<keyTemp.length;keycounter++){
+                keyArray[keycounter]=parseInt(keyTemp[keycounter]);
+            }
+            //array.concat(otherarray)
+            var ER = [32,1,2,3,4,5,4,5,6,7,8,9,8,9,10,11,12,13,12,13,14,15,16,17,16,17,18,19,20,21,20,21,22,23,24,25,24,25,26,27,28,29,28,29,30,31,32,1];
+            var PermC = [16,7,20,21,29,12,28,17,1,15,23,26,5,18,31,10,2,8,24,14,32,27,3,9,19,13,30,6,22,11,4,25];
+            var KeyPerm = [57,49,41,33,25,17,9,1,58,50,42,34,26,18,10,2,59,51,43,35,27,19,11,3,60,52,44,36,63,55,47,39,31,23,15,7,62,54,46,38,30,22,14,6,61,53,45,37,29,21,13,5,28,20,12,4];
+            var Lsi = [1,1,2,2,2,2,2,2,1,2,2,2,2,2,2,1];
+            var KeyPrem2 = [14,17,11,24,1,5,3,28,15,6,21,10,23,19,12,4,26,8,16,7,27,20,13,2,41,52,31,37,47,55,30,40,51,45,33,48,44,49,39,56,34,53,46,42,50,36,29,32];
+            var Sbox1 = [14,4,13,1,2,15,11,8,3,10,6,12,5,9,0,7,0,15,7,4,14,2,13,1,10,6,12,11,9,5,3,8,4,1,14,8,13,6,2,11,15,12,9,7,3,10,5,0,15,12,8,2,4,9,1,7,5,11,3,14,10,0,6,13];
+            var Sbox2 = [15,1,8,14,6,11,3,4,9,7,2,13,12,0,5,10,3,13,4,7,15,2,8,14,12,0,1,10,6,9,11,5,0,14,7,11,10,4,13,1,5,8,12,6,9,3,2,15,13,8,10,1,3,15,4,2,11,6,7,12,0,5,14,9];
+            var Sbox3 = [10,0,9,14,6,3,15,5,1,13,12,7,11,4,2,8,13,7,0,9,3,4,6,10,2,8,5,14,12,11,15,1,13,6,4,9,8,15,3,0,11,1,2,12,5,10,14,7,1,10,13,0,6,9,8,7,4,15,14,3,11,5,2,12];
+            var Sbox4 = [7,13,14,3,0,6,9,10,1,2,8,5,11,12,4,15,13,8,11,5,6,15,0,3,4,7,2,12,1,10,14,9,10,6,9,0,12,11,7,13,15,1,3,14,5,2,8,4,3,15,0,6,10,1,13,8,9,4,5,11,12,7,2,14];
+            var Sbox5 = [2,12,4,1,7,10,11,6,8,5,3,15,13,0,14,9,14,11,2,12,4,7,13,1,5,0,15,10,3,9,8,6,4,2,1,11,10,13,7,8,15,9,12,5,6,3,0,14,11,8,12,7,1,14,2,13,6,15,0,9,10,4,5,3];
+            var Sbox6 = [12,1,10,15,9,2,6,8,0,13,3,4,14,7,5,11,10,15,4,2,7,12,9,5,6,1,13,14,0,11,3,8,9,14,15,5,2,8,12,3,7,0,4,10,1,13,11,6,4,3,2,12,9,5,15,10,11,14,1,7,6,0,8,13];
+            var Sbox7 = [4,11,2,14,15,0,8,13,3,12,9,7,5,10,6,1,13,0,11,7,4,9,1,10,14,3,5,12,2,15,8,6,1,4,11,13,12,3,7,14,10,15,6,8,0,5,9,2,6,11,13,8,1,4,10,7,9,5,0,15,14,2,3,12];
+            var Sbox8 = [13,2,8,4,6,15,11,1,10,9,3,14,5,0,12,7,1,15,13,8,10,3,7,4,12,5,6,11,0,14,9,2,7,11,4,1,9,12,14,2,0,6,10,13,15,3,5,8,2,1,14,7,4,10,8,13,15,12,9,0,3,5,6,11];
+            var expanded = [];
+            // console.log("KeyLen"+keyArray.length);
+            for(var ec=0;ec<ER.length;ec++){
+                expanded[ec]=right[ER[ec]-1];
+            }
+            console.log(round+"expR     "+expanded);
+
+            var halfLength = Math.ceil(KeyPerm.length / 2); 
+            var keyLeft=[];
+            var keyRight=[];
+            for(var i=0;i<halfLength;i++){
+                keyLeft[i]=keyArray[KeyPerm[i]-1]
+                keyRight[i]=keyArray[KeyPerm[halfLength+i]-1];
+            }
+            console.log(round+"KL       "+keyLeft);
+            console.log(round+"KR       "+keyRight);
+
+            var shiftAmount = 0;
+            for(var k = 0;k<round+1;k++){
+                shiftAmount += Lsi[k];
+            }
+            for(var j = 0;j<shiftAmount;j++){
+                var tempLeft = keyLeft[0];
+                var tempRight = keyRight[0];
+                for(var m = 0;m<keyLeft.length-1;m++){
+                    keyLeft[m]=keyLeft[m+1];
+                    keyRight[m]=keyRight[m+1];
+                }
+                keyLeft[keyLeft.length-1]=tempLeft;
+                keyRight[keyRight.length-1]=tempRight;
+            }
+
+            var conjoined = keyLeft.concat(keyRight);
+            console.log(round+"conj Key "+conjoined);
+            var conNew = [];
+            for(var pe=0;pe<KeyPrem2.length;pe++){
+                conNew[pe] = conjoined[KeyPrem2[pe]-1];
+            }
+            var checked = [];
+            for(var i=0;i<expanded.length;i++){
+                checked[i]=checkSum(expanded[i],conNew[i]);
+            }
+            // console.log("expLen="+expanded.length+" KeyPrem2'd="+conNew.length+"  PermCLen"+KeyPrem2.length);
+            console.log(round+"expR+K   "+checked);
+            var ss1t = checked.splice(0,6);
+            var ss2t = checked.splice(0,6);
+            var ss3t = checked.splice(0,6);
+            var ss4t = checked.splice(0,6);
+            var ss5t = checked.splice(0,6);
+            var ss6t = checked.splice(0,6);
+            var ss7t = checked.splice(0,6);
+            var ss8t = checked;
+            var ss1 = [ss1t[0],ss1t[5],ss1t[1],ss1t[2],ss1t[3],ss1t[4]];
+            var ss2 = [ss2t[0],ss2t[5],ss2t[1],ss2t[2],ss2t[3],ss2t[4]];
+            var ss3 = [ss3t[0],ss3t[5],ss3t[1],ss3t[2],ss3t[3],ss3t[4]];
+            var ss4 = [ss4t[0],ss4t[5],ss4t[1],ss4t[2],ss4t[3],ss4t[4]];
+            var ss5 = [ss5t[0],ss5t[5],ss5t[1],ss5t[2],ss5t[3],ss5t[4]];
+            var ss6 = [ss6t[0],ss6t[5],ss6t[1],ss6t[2],ss6t[3],ss6t[4]];
+            var ss7 = [ss7t[0],ss7t[5],ss7t[1],ss7t[2],ss7t[3],ss7t[4]];
+            var ss8 = [ss8t[0],ss8t[5],ss8t[1],ss8t[2],ss8t[3],ss8t[4]];
+            var sbOut1 = intToBinaryArr(Sbox1[binaryCount(ss1)],4);
+            var sbOut2 = intToBinaryArr(Sbox2[binaryCount(ss2)],4);
+            var sbOut3 = intToBinaryArr(Sbox3[binaryCount(ss3)],4);
+            var sbOut4 = intToBinaryArr(Sbox4[binaryCount(ss4)],4);
+            var sbOut5 = intToBinaryArr(Sbox5[binaryCount(ss5)],4);
+            var sbOut6 = intToBinaryArr(Sbox6[binaryCount(ss6)],4);
+            var sbOut7 = intToBinaryArr(Sbox7[binaryCount(ss7)],4);
+            var sbOut8 = intToBinaryArr(Sbox8[binaryCount(ss8)],4);
+            var sConcat=sbOut1.concat(sbOut2.concat(sbOut3.concat(sbOut4.concat(sbOut5.concat(sbOut6.concat(sbOut7.concat(sbOut8)))))));
+            console.log(round+"pref     "+sConcat);
+            var permNew = [];
+            for(var i=0;i<PermC.length;i++){
+                permNew[i] = sConcat[PermC[i]-1];
+            }
+
+            // var test=[];
+            // var stringT="1 0 0 1 0 1 0 1 1 1 0 1 1 1 0 1 0 0 0 0 0 0 1 1 0 1 1 1 0 0 1 1";
+            // var arrayT=stringT.split(" ");
+            // for(var i=0;i<PermC.length;i++){
+            //     test[PermC[i]-1]=arrayT[i];
+            // }
+            // console.log("test  "+test);
+            console.log(round+"f(R,K)   "+permNew);
+            var finalCheck = [];
+            for(var i=0;i<left.length;i++){
+                finalCheck[i]=checkSum(left[i],permNew[i]);
+            }
+            console.log(round+1+"Left     "+right);
+            console.log(round+1+"RNew     "+finalCheck);
+
+            return DEShelper(right,finalCheck,round+1,roundsTOGO-1);
+        }
+        function binaryCount(arr){
+            var count=0;
+            for(var i=0;i<arr.length;i++){
+                if(arr[arr.length-i-1]==1){
+                    count+=Math.pow(2,i);
+                }
+            }
+            return count;
+        }
+        function intToBinaryArr(tempNumb,size){
+            var numb = tempNumb;
+            var temp = [];
+            for(var i=0;i<size;i++){
+                if(numb%Math.pow(2,size-i-1)!=numb){
+                    numb=numb-Math.pow(2,size-i-1);
+                    temp[i]=1;
+                }else{
+                    temp[i]=0;
+                }
+            }
+            return temp;
+        }
+        function checkSum(x,y){
+            if(x!=y){
+                return 1;
+            }else{
+                return 0;
+            }
+        }
+        function SHA(){
+            var input = document.getElementById("SHAinput").value;
+            var P = document.getElementById("SHAp");
+            var K1 = "5A827999";
+            var K2 = "6ED9EBA1";
+            var K3 = "8F1BBCDC";
+            var K4 = "CA62C1D6";
+            var A = "67452301";
+            var B = "EFCDAB89";
+            var C = "98BADCFE";
+            var D = "10325476";
+            var E = "C3D2E1F0";
+            var hexText = "";
+            var binText = "";
+            P.innerHTML ="";
+            for(var i=0;i<input.length;i++){
+                hexText+=""+input[i].charCodeAt(0).toString(16)+"";
+                var temp = ""+input[i].charCodeAt(0).toString(2)+"";
+                while(temp.length<8){
+                    temp="0"+temp;
+                }
+                binText+=temp;
+            }
+            if(hexText.length+binText.length.toString(16).length<128);
+            hexText +="8";
+            while(hexText.length+binText.length.toString(16).length<128){
+                hexText+="0";
+            }
+            hexText+=""+binText.length.toString(16);
+            var w=hexText;
+            var incr = 8;
+            for(var t=16;t<80;t++){
+                w+=""+checkSumW16Hex(w.substring((t-3)*incr,(t-2)*incr),
+                                            w.substring((t-8)*incr,(t-7)*incr),
+                                            w.substring((t-14)*incr,(t-13)*incr),
+                                            w.substring((t-16)*incr,(t-15)*incr));
+            }
+            console.log("W: "+w);
+            var newA="";
+            var newB="";
+            var newC="";
+            var newD="";
+            var newE="";
+            var fResult="";
+            var curK="";
+            console.log("A:"+A+"  B:"+B+"  C:"+C+"  D:"+D+"  E:"+E);
+            //Steps
+            for(var m=0;m<4;m++){
+                for(var p=0;p<20;p++){
+                    newB=A;
+                    newC=leftShiftHex(B,30);
+                    newD=C;
+                    newE=D;
+                    if(m==0){
+                        fResult= f1(B,C,D);
+                        curK=K1;
+                    }else if(m==1){
+                        fResult= f2(B,C,D);
+                        curK=K2;
+                    }else if(m==2){
+                        fResult= f3(B,C,D);
+                        curK=K3;
+                    }else if(m==3){
+                        fResult= f4(B,C,D);
+                        curK=K4;
+                    }
+                    newA=addRound(fResult,E);
+                    newA=addRound(newA,leftShiftHex(A,5));
+                    newA=addRound(newA,w.substring((m*20+p)*8,(m*20+p+1)*8));
+                    newA=addRound(newA,curK);
+                    A=newA;
+                    B=newB;
+                    C=newC;
+                    D=newD;
+                    E=newE;
+                    newA="";
+                    newB="";
+                    newC="";
+                    newD="";
+                    newE="";
+                    console.log("i:"+(m*20+p)+" A:"+A+"  B:"+B+"  C:"+C+"  D:"+D+"  E:"+E);
+                    //P.innerHTML+="<br>i:"+(m*20+p)+" A:"+A+"  B:"+B+"  C:"+C+"  D:"+D+"  E:"+E;
+                }
+            }
+            A=addRound(A,"67452301");
+            B=addRound(B,"EFCDAB89");
+            C=addRound(C,"98BADCFE");
+            D=addRound(D,"10325476");
+            E=addRound(E,"C3D2E1F0");
+            P.innerHTML += "<br>H0:"+A+"  H1:"+B+"  H2:"+C+"  H3:"+D+"  H4:"+E
+            console.log("A:"+A+"  B:"+B+"  C:"+C+"  D:"+D+"  E:"+E);
+        }
+        function f1(B,C,D){
+            return or2Hex(and2Hex(B,C),and2Hex(not2Hex(B),D));
+        }
+        function f2(B,C,D){
+             var newW = "";
+            for(var i=0;i<8;i++){
+                var firstBIN = Hex2Bin(B[i]);
+                var secondBIN = Hex2Bin(C[i]);
+                var thirdBIN = Hex2Bin(D[i]);
+                var innerBin = "";
+                for(var k =0;k<4;k++){
+                    var item = parseInt(firstBIN[k])+parseInt(secondBIN[k])+parseInt(thirdBIN[k]);
+                    if(item==3){
+                        innerBin+="1";
+                    }else if(item==2){
+                        innerBin+="0";
+                    }else if(item==1){
+                        innerBin+="1";
+                    }else if(item==0){
+                        innerBin+="0"
+                    }
+
+                }
+                newW+=""+innerBin;
+            }
+            return fillZeros(parseInt(newW, 2).toString(16));
+        }
+        function f3(B,C,D){
+            return or2Hex(and2Hex(B,C),or2Hex(and2Hex(B,D),and2Hex(C,D)));
+        }
+        function f4(B,C,D){
+            return f2(B,C,D);
+        }
+        function fillZeros(word){
+            var temp = word;
+            while(temp.length<8){
+                temp="0"+temp;
+            }
+            return temp;
+        }
+        function addRound(first,second){
+            var firstBIN="";
+            var secondBIN="";
+            var carry="0";
+            var newW="";
+            for(var i=0;i<8;i++){
+                var firstBIN = Hex2Bin(first[7-i]);
+                var secondBIN = Hex2Bin(second[7-i]);
+                var innerBin = "";
+                for(var k =0;k<4;k++){
+                    var item = parseInt(firstBIN[3-k])+parseInt(secondBIN[3-k])+parseInt(carry);
+                    if(item==3){
+                        carry="1";
+                        innerBin="1"+innerBin;
+                    }else if(item==2){
+                        carry="1";
+                        innerBin="0"+innerBin;
+                    }else if(item==1){
+                        carry="0";
+                        innerBin="1"+innerBin;
+                    }else if(item==0){
+                        carry="0";
+                        innerBin="0"+innerBin;
+                    }
+                }
+                newW=innerBin+""+newW;
+            }
+            return fillZeros(parseInt(newW, 2).toString(16));
+        }
+        function not2Hex(first){
+            var newW = "";
+            for(var i=0;i<8;i++){
+                var firstBIN = Hex2Bin(first[i]);
+                var innerBin = "";
+                for(var k =0;k<4;k++){
+                    if(firstBIN[k]=="1"){
+                        innerBin +="0";
+                    }else{
+                        innerBin +="1";
+                    }
+                }
+                newW+=""+innerBin;
+            }
+            return fillZeros(parseInt(newW, 2).toString(16));
+        }
+        function and2Hex(first,second){
+            var newW = "";
+            for(var i=0;i<8;i++){
+                var firstBIN = Hex2Bin(first[i]);
+                var secondBIN = Hex2Bin(second[i]);
+                var innerBin = "";
+                for(var k =0;k<4;k++){
+                    if(firstBIN[k]=="1"&&secondBIN[k]=="1"){
+                        innerBin +="1";
+                    }else{
+                        innerBin +="0";
+                    }
+                }
+                newW+=""+innerBin;
+            }
+            return fillZeros(parseInt(newW, 2).toString(16));
+        }
+        function or2Hex(first,second){
+            var newW = "";
+            for(var i=0;i<8;i++){
+                var firstBIN = Hex2Bin(first[i]);
+                var secondBIN = Hex2Bin(second[i]);
+                var innerBin = "";
+                for(var k =0;k<4;k++){
+                    if(firstBIN[k]=="1"||secondBIN[k]=="1"){
+                        innerBin +="1";
+                    }else{
+                        innerBin +="0";
+                    }
+                }
+                newW+=""+innerBin;
+            }
+            return fillZeros(parseInt(newW, 2).toString(16));
+        }
+        function checkSum2Hex(first,second){
+            var newW = "";
+            for(var i=0;i<8;i++){
+                var firstBIN = Hex2Bin(first[i]);
+                var secondBIN = Hex2Bin(second[i]);
+                var innerBin = "";
+                for(var k =0;k<4;k++){
+                    innerBin +=checkSum(firstBIN[k],secondBIN[k]);
+                }
+                newW+=""+innerBin;
+            }
+            return parseInt(newW, 2).toString(16);
+        }
+        function leftShift(word,n){
+            var newWord=word;
+            var num = parseInt(n);
+            var count=0;
+            while(count!=n){
+                var temp = newWord.substring(1,newWord.length)+""+newWord.substring(0,1);
+                newWord=temp;
+                count++;
+            }
+            return newWord;
+        }
+        function leftShiftHex(word,n){
+            var newWord = "";
+            for(var i=0;i<8;i++){
+                newWord += Hex2Bin(word[i]);
+            }
+            var num = parseInt(n);
+            var count=0;
+            while(count!=n){
+                var temp = newWord.substring(1,newWord.length)+""+newWord.substring(0,1);
+                newWord=temp;
+                count++;
+            }
+            return fillZeros(parseInt(newWord, 2).toString(16));
+        }
+        function checkSumW16Hex(wt3,wt8,wt14,wt16){
+            var newW = "";
+            for(var i=0;i<8;i++){
+                var w3i = Hex2Bin(wt3[i]);
+                var w8i = Hex2Bin(wt8[i]);
+                var w14i = Hex2Bin(wt14[i]);
+                var w16i = Hex2Bin(wt16[i]);
+                var innerBin = "";
+                for(var k =0;k<4;k++){
+                    innerBin +=""+checkSum(w3i[k],""+checkSum(w8i[k],""+checkSum(w14i[k],w16i[k])));
+                }
+                newW+=""+innerBin;
+            }
+            return fillZeros(parseInt(leftShift(newW,1), 2).toString(16));
+        }
+
+        function Hex2Bin(n){
+            var temp = parseInt(n,16).toString(2);
+            while(temp.length<4){
+                temp="0"+temp;
+            }
+            return temp;
+
+        }
+    </script>
