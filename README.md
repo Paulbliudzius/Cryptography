@@ -12,4 +12,4 @@ Everything was done on one page with no pretty layouts in HTML and JavaScript.
 ##Website
 You can use it directly from: www.bliudzius.com/cryptography
 
-I have no intention of working on this any more, so please feel free to add to it as you wish. The code used is directed towards indiviudal assignment for my class to learn how the algorithms worked and to help solve them.
+I have no intention of working on this anymore, so please feel free to add to it as you wish. The code used is directed towards indiviudal assignments in my class. This was used to learn how the algorithms worked and to help solve them.
