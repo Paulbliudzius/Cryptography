@@ -1,6 +1,7 @@
 # Cryptography Helper
 A Page of JavaScript Code that I used in my class for Cryptography. By: Paul Bliudzius
-##Inclues:
+Everything was done on one page with no pretty layouts in HTML and JavaScript.
+##Includes:
 * Modular Inverse
 * GCD ( Greatest Common Divisors )
 * Affine Cipher
